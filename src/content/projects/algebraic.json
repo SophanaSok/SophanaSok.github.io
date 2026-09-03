@@ -10,12 +10,12 @@
   ],
   "verifiedOn": "2026-09-03",
   "repo": "https://github.com/SophanaSok/algebraic",
+  "visibility": "private",
   "metrics": [
     {
       "label": "commits",
       "value": 11,
-      "how": "git rev-list --count HEAD on main, 2026-09-03",
-      "href": "https://github.com/SophanaSok/algebraic/commits/main"
+      "how": "git rev-list --count HEAD on main, 2026-09-03"
     }
   ],
   "lens": {

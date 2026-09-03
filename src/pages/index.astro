@@ -90,15 +90,22 @@ const WRITING = [
       <ol class="more" aria-label="More projects">
         {secondary.map((p) => (
           <li class="lensed" data-lens={RANKED.filter((l) => p.data.lens[l]).join(' ')} style={RANKED.filter((l) => p.data.lens[l]).map((l) => `--o-${l}:${p.data.lens[l]!.rank}`).join(';')}>
-            <p class="name"><a href={p.data.repo}>{p.data.name}</a><small>{p.data.language}</small></p>
+            <p class="name">
+              {p.data.visibility === 'private' ? <span>{p.data.name}</span> : <a href={p.data.repo}>{p.data.name}</a>}
+              <small>{p.data.language}</small>
+            </p>
             <p class="what"><b>{p.data.tagline}</b> {p.data.highlights[0]}</p>
-            <a class="go" href={p.data.repo}>source ↗</a>
+            {p.data.visibility === 'private' ? (
+              p.data.live ? <a class="go" href={p.data.live}>live ↗</a> : <span class="go chip chip-private">private repo</span>
+            ) : (
+              <a class="go" href={p.data.repo}>source ↗</a>
+            )}
           </li>
         ))}
       </ol>
       <p class="note">
-        Everything listed has a public repository or a live URL. Work that is not public is not here.
-        <a href={`${base}/projects/`}>The full table →</a>
+        Every project here is public on GitHub or live at a URL you can open. Private repositories are marked and
+        available on request. <a href={`${base}/projects/`}>The full table →</a>
       </p>
     </Block>
 

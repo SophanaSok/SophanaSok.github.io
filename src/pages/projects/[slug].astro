@@ -45,8 +45,12 @@ const images = project.data.images.map((img) => ({
       <h1>{project.data.name}<span class="cursor" aria-hidden="true"></span></h1>
       <p class="lede">{project.data.tagline}</p>
       <p class="actions">
-        <a class="btn btn-primary" href={project.data.repo}>Source ↗</a>
-        {project.data.live && <a class="btn" href={project.data.live}>Live ↗</a>}
+        {project.data.visibility === 'private' ? (
+          <span class="chip chip-private">private repo · source on request</span>
+        ) : (
+          <a class="btn btn-primary" href={project.data.repo}>Source ↗</a>
+        )}
+        {project.data.live && <a class={project.data.visibility === 'private' ? 'btn btn-primary' : 'btn'} href={project.data.live}>Live ↗</a>}
         {project.data.site && <a class="btn" href={project.data.site}>Site ↗</a>}
       </p>
       <Chips items={project.data.stack} label="Stack" />

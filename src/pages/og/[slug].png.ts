@@ -28,7 +28,7 @@ export async function getStaticPaths() {
 
   const projects: Card = {
     kicker: 'PROJECTS',
-    title: `${all.length} public projects`,
+    title: `${all.length} projects`,
     lines: wrap('Rust, TypeScript, Python, C++ and Lua. Every number names the command that counted it.', 52, 2),
     tiles: flagships.map((p) => [p.data.language, p.data.name]),
     footer: `${FOOT}/projects/`,

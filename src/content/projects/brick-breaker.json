@@ -13,12 +13,12 @@
   ],
   "verifiedOn": "2026-09-03",
   "repo": "https://github.com/SophanaSok/brick-breaker",
+  "visibility": "private",
   "metrics": [
     {
       "label": "commits",
       "value": 9,
-      "how": "git rev-list --count HEAD on main, 2026-09-03",
-      "href": "https://github.com/SophanaSok/brick-breaker/commits/main"
+      "how": "git rev-list --count HEAD on main, 2026-09-03"
     }
   ],
   "lens": {

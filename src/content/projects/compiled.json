@@ -4,24 +4,32 @@
   "summary": "A news aggregator that fetches sixty tech blogs and news sites behind a semaphore with exponential backoff, parses feeds and listing pages with BeautifulSoup, deduplicates by canonical URL, title fingerprint and token-set Jaccard similarity, scores thirteen categories from weighted keyword tables, and serves the result through a FastAPI REST API and a dependency-free web UI on SQLite with FTS5 search. Dockerised and running on Fly.io, refreshing itself every twenty minutes.",
   "tier": "flagship",
   "language": "Python",
-  "stack": ["Python 3.12", "FastAPI", "httpx (async)", "BeautifulSoup", "SQLite WAL + FTS5", "Docker", "Fly.io", "uv"],
+  "stack": [
+    "Python 3.12",
+    "FastAPI",
+    "httpx (async)",
+    "BeautifulSoup",
+    "SQLite WAL + FTS5",
+    "Docker",
+    "Fly.io",
+    "uv"
+  ],
   "version": "0.2.0",
   "verifiedOn": "2026-09-03",
   "repo": "https://github.com/SophanaSok/compiled",
+  "visibility": "private",
   "live": "https://compiled.fly.dev/",
   "license": "MIT",
   "metrics": [
     {
       "label": "sources",
       "value": 60,
-      "how": "grep -cE '^\\s*Source\\(' compiled/sources.py, at tag v0.2.0",
-      "href": "https://github.com/SophanaSok/compiled/blob/main/compiled/sources.py"
+      "how": "grep -cE '^\\s*Source\\(' compiled/sources.py, at tag v0.2.0"
     },
     {
       "label": "tests",
       "value": 108,
-      "how": "grep -c 'def test_' tests/*.py, summed, at tag v0.2.0",
-      "href": "https://github.com/SophanaSok/compiled/tree/main/tests"
+      "how": "grep -c 'def test_' tests/*.py, summed, at tag v0.2.0"
     },
     {
       "label": "lines of Python",
@@ -35,7 +43,11 @@
     }
   ],
   "channels": [
-    { "name": "Live on Fly.io", "kind": "live", "href": "https://compiled.fly.dev/" }
+    {
+      "name": "Live on Fly.io",
+      "kind": "live",
+      "href": "https://compiled.fly.dev/"
+    }
   ],
   "lens": {
     "data": {

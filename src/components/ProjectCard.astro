@@ -17,6 +17,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const lenses = RANKED.filter((l) => data.lens[l]);
 const order = lenses.map((l) => `--o-${l}:${data.lens[l]!.rank}`).join(';');
 const shown = data.metrics.slice(0, 3);
+const isPublic = data.visibility !== 'private';
 ---
 <Block
   title={data.name}
@@ -43,7 +44,7 @@ const shown = data.metrics.slice(0, 3);
   <Chips items={data.stack} label={`${data.name} stack`} class="card-stack" />
   <p class="card-links">
     {study && <a class="btn btn-primary" href={`${base}/projects/${project.id}/`}>Case study →</a>}
-    <a class="btn" href={data.repo}>Source ↗</a>
+    {isPublic ? <a class="btn" href={data.repo}>Source ↗</a> : <span class="chip chip-private">private repo · source on request</span>}
     {data.live && <a class="btn" href={data.live}>Live ↗</a>}
     {data.site && <a class="btn" href={data.site}>Site ↗</a>}
   </p>

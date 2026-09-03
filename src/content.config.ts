@@ -45,6 +45,8 @@ const projects = defineCollection({
     version: z.string().optional(),
     verifiedOn: date,
     repo: z.url(),
+    /** Private repositories are marked and never linked. */
+    visibility: z.enum(['public', 'private']).default('public'),
     live: z.url().optional(),
     site: z.url().optional(),
     license: z.string().optional(),

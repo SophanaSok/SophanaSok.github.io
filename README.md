@@ -21,7 +21,9 @@ nothing load from anywhere but its own origin. Deployed to GitHub Pages from
 
 Everything the site says is checked by `npm run check`:
 
-- Every project has a public repository. Work that is not public is not here.
+- Every project has a repository under the author's account. A private one is
+  marked `visibility: private`, rendered with a chip, and never linked. Nothing
+  without a repository or a live URL appears.
 - Every metric carries a `how`: the command that produced it, at the tag
   named. `npm run stats` recounts them from the sibling checkouts.
 - No email address, no employer name, no placeholder text of any kind.

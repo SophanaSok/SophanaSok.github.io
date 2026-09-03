@@ -48,10 +48,10 @@ const website = {
 
 const code = projects.map((p) => ({
   '@type': 'SoftwareSourceCode',
-  '@id': `${p.data.repo}#code`,
+  '@id': p.data.visibility === 'private' ? id(`code-${p.id}`) : `${p.data.repo}#code`,
   name: p.data.name,
   description: p.data.tagline,
-  codeRepository: p.data.repo,
+  ...(p.data.visibility === 'private' ? {} : { codeRepository: p.data.repo }),
   programmingLanguage: p.data.language,
   ...(p.data.version ? { version: p.data.version } : {}),
   ...(p.data.license ? { license: p.data.license } : {}),

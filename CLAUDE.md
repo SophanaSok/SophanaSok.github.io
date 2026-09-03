@@ -8,8 +8,10 @@ the bar: build, `astro check`, and `node --test`.
 - **Every number names its method.** A metric without a `how` fails the
   schema. Change a number only by recounting (`npm run stats`) or by updating
   the `how` string to the command that produced the new value.
-- **Public work only.** A project record needs a `repo` under
-  `github.com/SophanaSok/`. No "private" entries, no unlinked claims.
+- **Repos are named, private ones are marked.** A project record needs a
+  `repo` under `github.com/SophanaSok/`; a private repo carries
+  `visibility: private`, is rendered with a chip and is never linked (a test
+  greps `dist/` for it). `npm run stats` refreshes visibility from GitHub.
 - **No contact address, no employer, no placeholders.** The list in
   `src/lib/site.ts` (`PLACEHOLDERS`) is grepped across `src/` and `dist/`.
   The one line about the present is `profile.now`.

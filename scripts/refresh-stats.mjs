@@ -20,7 +20,6 @@ const DIRS = {
   'json-data-drift-analyzer': 'json-data-drift-analyzer',
   compiled: 'tech-news',
   otacli: 'otacli',
-  streakly: 'streakly',
   oneplusone: 'games/oneplusone',
   'brick-breaker': 'games/brick-breaker',
   algebraic: 'games/algebraic',
@@ -90,6 +89,18 @@ for (const [id, rel] of Object.entries(DIRS)) {
       m.value = value;
       changed += 1;
     }
+  }
+  const remote = record.repo.match(/SophanaSok\/([\w.-]+)$/)?.[1];
+  try {
+    const seen = sh(`gh api repos/SophanaSok/${remote} --jq .visibility`, dir);
+    const was = record.visibility ?? 'public';
+    if (seen !== was) {
+      console.log(`${id}: visibility ${was} -> ${seen}`);
+      record.visibility = seen;
+      changed += 1;
+    }
+  } catch {
+    console.log(`${id}: GitHub has no repo named ${remote}; visibility left at ${record.visibility ?? 'public'}`);
   }
   const v = version(dir);
   if (v && record.version && v !== record.version) {

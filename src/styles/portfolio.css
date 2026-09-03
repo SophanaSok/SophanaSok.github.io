@@ -57,6 +57,14 @@ body {
   vertical-align: -0.06em;
 }
 
+.chip-private {
+  border-style: dashed;
+  color: var(--muted);
+  background: transparent;
+  font-size: var(--step--2);
+  align-self: center;
+}
+
 /* ---- Header additions ---------------------------------------------------- */
 
 .site-header .lens {

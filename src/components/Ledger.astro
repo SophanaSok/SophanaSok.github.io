@@ -28,8 +28,9 @@ const KIND: Record<string, string> = {
     <div class="ledger-cell">
       {!single && (
         <p class="ledger-name">
-          <a href={p.data.repo}>{p.data.name}</a>
+          {p.data.visibility === 'private' ? <span>{p.data.name}</span> : <a href={p.data.repo}>{p.data.name}</a>}
           {p.data.version && <span class="dim">v{p.data.version}</span>}
+          {p.data.visibility === 'private' && <span class="chip chip-private">private repo</span>}
         </p>
       )}
       <dl class="ledger-metrics">

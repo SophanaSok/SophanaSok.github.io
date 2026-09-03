@@ -46,9 +46,21 @@ test('no email address reaches the build', () => {
   }
 });
 
-test('every project has a public repository under the author’s account', () => {
+test('every project has a repository under the author’s account, and is public or reachable', () => {
   for (const p of projects) {
     assert.match(p.repo, new RegExp(`^${SITE.github.replace(/\./g, '\\.')}/[\\w.-]+$`), `${p.id}: ${p.repo}`);
+    assert.ok(['public', 'private', undefined].includes(p.visibility), `${p.id}: visibility ${p.visibility}`);
+  }
+});
+
+test('no page links to a private repository, and every mention of one says so', () => {
+  const pages = walk(DIST).filter((f) => f.endsWith('.html'));
+  for (const p of projects.filter((x) => x.visibility === 'private')) {
+    for (const file of pages) {
+      const html = readFileSync(file, 'utf8');
+      assert.ok(!html.includes(p.repo), `${file} mentions the private repo ${p.repo}`);
+      if (html.includes(`>${p.name}<`)) assert.ok(html.includes('private repo'), `${file} names ${p.name} without marking it private`);
+    }
   }
 });
 
@@ -99,7 +111,7 @@ test('every ranked element in the build says which lenses it is in', () => {
 test('every GitHub link in the build points at something the content declares', () => {
   const declared = new Set([SITE.github, SITE.source, profile.links.github]);
   for (const p of projects) {
-    declared.add(p.repo);
+    if (p.visibility !== 'private') declared.add(p.repo);
     for (const m of p.metrics) if (m.href) declared.add(m.href);
     for (const c of p.channels ?? []) declared.add(c.href);
   }

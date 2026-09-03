@@ -25,7 +25,7 @@ const projects = all.sort((a, b) => {
 >
   <div class="shell">
     <header class="study-head">
-      <p class="eyebrow"><span class="chip">{projects.length} public projects</span></p>
+      <p class="eyebrow"><span class="chip">{projects.length} projects</span></p>
       <h1>Projects<span class="cursor" aria-hidden="true"></span></h1>
       <p class="lede">Every public project, ranked by the lens in the header. Hover a number for the command that produced it.</p>
     </header>
@@ -37,7 +37,13 @@ const projects = all.sort((a, b) => {
           return (
             <div class="ptable-row lensed" data-lens={lenses.join(' ')} style={lenses.map((l) => `--o-${l}:${p.data.lens[l]!.rank}`).join(';')}>
               <p class="name">
-                {studies.has(p.id) ? <a href={`${base}/projects/${p.id}/`}>{p.data.name}</a> : <a href={p.data.repo}>{p.data.name}</a>}
+                {studies.has(p.id) ? (
+                  <a href={`${base}/projects/${p.id}/`}>{p.data.name}</a>
+                ) : p.data.visibility === 'private' ? (
+                  p.data.live ? <a href={p.data.live}>{p.data.name}</a> : <span>{p.data.name}</span>
+                ) : (
+                  <a href={p.data.repo}>{p.data.name}</a>
+                )}
                 <small>{p.data.language}{p.data.version && ` · v${p.data.version}`}</small>
               </p>
               <div class="what">
@@ -52,7 +58,7 @@ const projects = all.sort((a, b) => {
               </p>
               <p class="go">
                 {studies.has(p.id) && <a href={`${base}/projects/${p.id}/`}>case study →</a>}
-                <a href={p.data.repo}>source ↗</a>
+                {p.data.visibility === 'private' ? <span class="chip chip-private">private repo</span> : <a href={p.data.repo}>source ↗</a>}
                 {p.data.live && <a href={p.data.live}>live ↗</a>}
                 {p.data.site && <a href={p.data.site}>site ↗</a>}
               </p>
@@ -60,7 +66,7 @@ const projects = all.sort((a, b) => {
           );
         })}
       </div>
-      <p class="note">Work without a public repository or a live URL is not listed.</p>
+      <p class="note">Every project here is public on GitHub or live at a URL you can open. Private repositories are marked and available on request.</p>
     </Block>
   </div>
 </Base>

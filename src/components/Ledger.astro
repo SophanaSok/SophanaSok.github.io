@@ -1,0 +1,83 @@
+---
+/* The proof strip: every number the page states, beside the command that
+ * produced it and, where one exists, the page it can be recounted on.
+ * This is the credibility device of the whole site. A number without a
+ * method cannot be entered: the content schema requires `how`. */
+import type { CollectionEntry } from 'astro:content';
+import { formatNumber } from '../lib/format';
+
+interface Props {
+  projects: CollectionEntry<'projects'>[];
+  /** One project's ledger, on its own page. */
+  single?: boolean;
+  id?: string;
+}
+const { projects, single = false, id } = Astro.props;
+
+const KIND: Record<string, string> = {
+  registry: 'registry',
+  tap: 'tap',
+  bucket: 'bucket',
+  'release-asset': 'release asset',
+  live: 'live',
+  pending: 'in review',
+};
+---
+<div class={['ledger', single && 'ledger-single'].filter(Boolean).join(' ')} id={id}>
+  {projects.map((p) => (
+    <div class="ledger-cell">
+      {!single && (
+        <p class="ledger-name">
+          <a href={p.data.repo}>{p.data.name}</a>
+          {p.data.version && <span class="dim">v{p.data.version}</span>}
+        </p>
+      )}
+      <dl class="ledger-metrics">
+        {p.data.metrics.map((m) => (
+          <div>
+            <dd>
+              <data value={String(m.value)}>
+                {m.href ? <a href={m.href} title={m.how}>{formatNumber(m.value)}</a> : <abbr title={m.how}>{formatNumber(m.value)}</abbr>}
+              </data>
+            </dd>
+            <dt>{m.label}</dt>
+          </div>
+        ))}
+      </dl>
+      {p.data.channels.length > 0 && (
+        <ul class="ledger-channels" aria-label={`Where ${p.data.name} is available`}>
+          {p.data.channels.map((c) => (
+            <li>
+              <a href={c.href} class={`ch ch-${c.kind}`}>{c.name}</a>
+              <span class="dim">{KIND[c.kind]}</span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  ))}
+</div>
+
+<details class="ledger-how">
+  <summary>How these numbers were counted</summary>
+  <p>
+    Each figure was produced by the command beside it, run in the repository at the tag named, on
+    the date shown. Hover a number for the same text. Nothing here is estimated or rounded up.
+  </p>
+  {projects.map((p) => (
+    <div class="ledger-how-project">
+      <p class="ledger-how-name">
+        {p.data.name} <span class="dim">verified {p.data.verifiedOn}</span>
+      </p>
+      <ul>
+        {p.data.metrics.map((m) => (
+          <li>
+            <b>{formatNumber(m.value)} {m.label}</b>
+            <code>{m.how}</code>
+            {m.href && <a href={m.href}>recount ↗</a>}
+          </li>
+        ))}
+      </ul>
+    </div>
+  ))}
+</details>

@@ -1,0 +1,100 @@
+---
+/* What the page says to a machine.
+ *
+ * A Person, a WebSite, and one SoftwareSourceCode per project the page is
+ * about, each read from the same content record the page renders. Absent on
+ * purpose: any contact address, and any rating or review field. There is
+ * nothing to read those from, and inventing them is what this site does not
+ * do. `tests/site.test.mjs` fails if an address reaches the graph. */
+import type { CollectionEntry } from 'astro:content';
+import { SITE } from '../lib/site';
+import profile from '../content/profile.json';
+
+type Project = CollectionEntry<'projects'>;
+
+interface Props {
+  kind: 'home' | 'list' | 'study';
+  title: string;
+  description: string;
+  canonical: URL;
+  image: URL;
+  projects: Project[];
+  date: string;
+}
+const { kind, title, description, canonical, image, projects, date } = Astro.props;
+
+const home = new URL(import.meta.env.BASE_URL.replace(/\/?$/, '/'), Astro.site);
+const id = (fragment: string) => `${home.href}#${fragment}`;
+
+const person = {
+  '@type': 'Person',
+  '@id': id('me'),
+  name: profile.name,
+  url: home.href,
+  sameAs: [profile.links.github, profile.links.linkedin],
+  jobTitle: 'Data Specialist',
+  knowsAbout: ['Rust', 'TypeScript', 'Python', 'data pipelines', 'terminal user interfaces', 'LLM cost analysis'],
+};
+
+const website = {
+  '@type': 'WebSite',
+  '@id': id('website'),
+  url: home.href,
+  name: SITE.name,
+  description: profile.description,
+  inLanguage: 'en',
+  author: { '@id': person['@id'] },
+};
+
+const code = projects.map((p) => ({
+  '@type': 'SoftwareSourceCode',
+  '@id': `${p.data.repo}#code`,
+  name: p.data.name,
+  description: p.data.tagline,
+  codeRepository: p.data.repo,
+  programmingLanguage: p.data.language,
+  ...(p.data.version ? { version: p.data.version } : {}),
+  ...(p.data.license ? { license: p.data.license } : {}),
+  ...(p.data.live ?? p.data.site ? { url: p.data.live ?? p.data.site } : {}),
+  author: { '@id': person['@id'] },
+}));
+
+const page =
+  kind === 'study'
+    ? {
+        '@type': 'TechArticle',
+        '@id': `${canonical.href}#article`,
+        headline: title,
+        description,
+        url: canonical.href,
+        inLanguage: 'en',
+        datePublished: date,
+        dateModified: date,
+        author: { '@id': person['@id'] },
+        isPartOf: { '@id': website['@id'] },
+        about: { '@id': code[0]?.['@id'] },
+        image: image.href,
+        mainEntityOfPage: canonical.href,
+      }
+    : {
+        '@type': kind === 'home' ? 'ProfilePage' : 'CollectionPage',
+        '@id': `${canonical.href}#page`,
+        url: canonical.href,
+        name: title,
+        description,
+        inLanguage: 'en',
+        dateModified: date,
+        isPartOf: { '@id': website['@id'] },
+        mainEntity: { '@id': person['@id'] },
+        image: image.href,
+      };
+
+// `set:html` writes the string as it stands, which is what JSON needs. The only
+// sequences that can end the element early begin with `<`, so every one goes
+// out as its JSON escape.
+const json = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@graph': [person, website, ...code, page],
+}).replace(/</g, '\\u003c');
+---
+<script type="application/ld+json" set:html={json} />

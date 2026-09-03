@@ -1,0 +1,26 @@
+{
+  "name": "sophanasok.github.io",
+  "private": true,
+  "type": "module",
+  "description": "Sophana Sok's portfolio: shipped software with numbers you can recount",
+  "license": "MIT",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check:types": "astro check",
+    "check": "node --test \"tests/**/*.test.mjs\"",
+    "verify": "npm run build && npm run check:types && npm run check",
+    "stats": "node scripts/refresh-stats.mjs"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.10",
+    "@types/node": "^26.4.1",
+    "astro": "^7.3.1",
+    "sharp": "^0.35.4",
+    "typescript": "^6.0.3"
+  }
+}

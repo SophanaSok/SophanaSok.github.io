@@ -1,0 +1,38 @@
+{
+  "name": "oneplusone",
+  "tagline": "A math skill tree that tunes its own difficulty with Elo.",
+  "summary": "A browser math game climbing a real skill tree from arithmetic to Algebra I, offline, in TypeScript. Twenty-five skills with procedurally generated problems in five tiers; adaptive difficulty keeps an Elo rating per skill and aims at about 75% success; spaced repetition pulls earlier material back through dungeons, daily encounters and bosses. Pixel art and chiptune are generated from code. Pre-alpha.",
+  "tier": "secondary",
+  "language": "TypeScript",
+  "stack": [
+    "TypeScript",
+    "Vite",
+    "Elo rating",
+    "spaced repetition",
+    "procedural pixel art"
+  ],
+  "verifiedOn": "2026-09-03",
+  "repo": "https://github.com/SophanaSok/oneplusone",
+  "metrics": [
+    {
+      "label": "commits",
+      "value": 113,
+      "how": "git rev-list --count HEAD on main, 2026-09-03",
+      "href": "https://github.com/SophanaSok/oneplusone/commits/main"
+    }
+  ],
+  "lens": {
+    "ml": {
+      "rank": 3,
+      "angle": "Per-skill Elo ratings and a target success rate choose the next problem; spaced repetition schedules the review."
+    },
+    "swe": {
+      "rank": 7,
+      "angle": "A TypeScript game with an adaptive-difficulty loop, 113 commits in."
+    }
+  },
+  "highlights": [
+    "Elo per skill, not per player, so difficulty adapts per topic and a proficiency trial gates each unlock.",
+    "Misses return as fresh problems rather than revealed answers; reduced motion, high contrast and screen-reader math are in the MVP scope."
+  ]
+}

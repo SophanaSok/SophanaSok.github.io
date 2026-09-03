@@ -1,0 +1,23 @@
+---
+import Base from '../layouts/Base.astro';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+<Base
+  title="Not found"
+  path="404/"
+  description="There is no page at this address on Sophana Sok's site. The home page lists every project and case study."
+  og="home"
+  ogAlt="Sophana Sok: a terminal card listing four flagship projects"
+  index={false}
+  page="404"
+>
+  <div class="shell">
+    <section class="hero">
+      <div class="hero-title">
+        <p class="eyebrow"><span class="chip">404</span></p>
+        <h1>Not found<span class="cursor" aria-hidden="true"></span></h1>
+        <p class="lede">There is no page here. <a href={`${base}/`}>Back to the start.</a></p>
+      </div>
+    </section>
+  </div>
+</Base>

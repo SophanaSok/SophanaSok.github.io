@@ -1,0 +1,50 @@
+---
+/* One flagship, as a titled block that the lens can rank and re-word. */
+import type { CollectionEntry } from 'astro:content';
+import Block from './Block.astro';
+import Chips from './Chips.astro';
+import { RANKED } from '../lib/site';
+import { formatNumber } from '../lib/format';
+
+interface Props {
+  project: CollectionEntry<'projects'>;
+  n: string;
+  study: boolean;
+}
+const { project, n, study } = Astro.props;
+const { data } = project;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const lenses = RANKED.filter((l) => data.lens[l]);
+const order = lenses.map((l) => `--o-${l}:${data.lens[l]!.rank}`).join(';');
+const shown = data.metrics.slice(0, 3);
+---
+<Block
+  title={data.name}
+  n={n}
+  id={project.id}
+  class="card lensed"
+  attrs={{ 'data-lens': lenses.join(' '), style: order }}
+>
+  <p class="card-tagline">{data.tagline}</p>
+  {lenses.map((l) => (
+    <p class="card-angle" data-for={l}>
+      <span class="prompt" aria-hidden="true">❯</span> {data.lens[l]!.angle}
+    </p>
+  ))}
+  <p class="card-summary">{data.summary}</p>
+  <dl class="card-metrics">
+    {shown.map((m) => (
+      <div>
+        <dd><abbr title={m.how}>{formatNumber(m.value)}</abbr></dd>
+        <dt>{m.label}</dt>
+      </div>
+    ))}
+  </dl>
+  <Chips items={data.stack} label={`${data.name} stack`} class="card-stack" />
+  <p class="card-links">
+    {study && <a class="btn btn-primary" href={`${base}/projects/${project.id}/`}>Case study →</a>}
+    <a class="btn" href={data.repo}>Source ↗</a>
+    {data.live && <a class="btn" href={data.live}>Live ↗</a>}
+    {data.site && <a class="btn" href={data.site}>Site ↗</a>}
+  </p>
+</Block>

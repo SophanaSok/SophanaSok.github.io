@@ -1,0 +1,76 @@
+---
+import { getCollection, getEntry, render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Ledger from '../../components/Ledger.astro';
+import Frame from '../../components/Frame.astro';
+import Contents from '../../components/Contents.astro';
+import Chips from '../../components/Chips.astro';
+import { assetSize } from '../../lib/text';
+
+export async function getStaticPaths() {
+  const studies = await getCollection('caseStudies');
+  return studies.map((study) => ({ params: { slug: study.id }, props: { study } }));
+}
+
+const { study } = Astro.props;
+const project = await getEntry('projects', study.data.project);
+if (!project) throw new Error(`${study.id}: no project named ${study.data.project}`);
+const { Content, headings } = await render(study);
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const images = project.data.images.map((img) => ({
+  ...img,
+  src: `${base}/projects/${project.id}/${img.file}`,
+  ...assetSize(`public/projects/${project.id}`, img.file),
+}));
+---
+<Base
+  title={project.data.name}
+  path={`projects/${study.id}/`}
+  description={study.data.description}
+  og={study.id}
+  ogAlt={`A terminal card for ${project.data.name}: ${project.data.tagline}`}
+  kind="study"
+  projects={[project]}
+  date={study.data.updated}
+  page="study"
+>
+  <div class="shell">
+    <header class="study-head">
+      <p class="eyebrow">
+        <span class="chip">case study</span>
+        <span class="chip">{project.data.language}</span>
+        {project.data.version && <span class="chip">v{project.data.version}</span>}
+        {project.data.license && <span class="chip">{project.data.license}</span>}
+      </p>
+      <h1>{project.data.name}<span class="cursor" aria-hidden="true"></span></h1>
+      <p class="lede">{project.data.tagline}</p>
+      <p class="actions">
+        <a class="btn btn-primary" href={project.data.repo}>Source ↗</a>
+        {project.data.live && <a class="btn" href={project.data.live}>Live ↗</a>}
+        {project.data.site && <a class="btn" href={project.data.site}>Site ↗</a>}
+      </p>
+      <Chips items={project.data.stack} label="Stack" />
+    </header>
+
+    <Ledger projects={[project]} single id="ledger" />
+
+    {images.length > 0 && (
+      <div class="study-gallery">
+        {images.map((img, i) => (
+          <Frame src={img.src} alt={img.alt} width={img.width} height={img.height} label={img.label} loading={i === 0 ? 'eager' : 'lazy'} />
+        ))}
+      </div>
+    )}
+
+    <div class="study-body with-rail">
+      <Contents headings={headings} depth={2} />
+      <article class="prose">
+        <Content />
+      </article>
+    </div>
+
+    <p class="note">
+      <a href={`${base}/#projects`}>← All projects</a>
+    </p>
+  </div>
+</Base>

@@ -1,0 +1,181 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import Meta from '../components/Meta.astro';
+import Schema from '../components/Schema.astro';
+import ThemeToggle from '../components/ThemeToggle.astro';
+import LensControl from '../components/LensControl.astro';
+import { PAGES } from '../lib/pages';
+import { SITE, LENSES } from '../lib/site';
+import profile from '../content/profile.json';
+import boot from '../lib/theme-boot.js?raw';
+import '../styles/tokens.css';
+import '../styles/fonts.css';
+import '../styles/base.css';
+import '../styles/components.css';
+import '../styles/portfolio.css';
+import '../styles/lens.css';
+import '../styles/motion.css';
+
+interface Props {
+  title: string;
+  /** Path under the site root, without `base`, e.g. `projects/`. */
+  path: string;
+  description: string;
+  /** The OG card slug under `/og/`. */
+  og: string;
+  ogAlt: string;
+  kind?: 'home' | 'list' | 'study';
+  /** Projects the page is about, for the structured data. */
+  projects?: CollectionEntry<'projects'>[];
+  /** False for a page that is not a URL anyone can visit. */
+  index?: boolean;
+  date?: string;
+  page?: string;
+}
+const {
+  title,
+  path,
+  description,
+  og,
+  ogAlt,
+  kind = 'list',
+  projects = [],
+  index = true,
+  date = profile.verifiedOn,
+  page,
+} = Astro.props;
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const url = (p: string) => `${base}/${p}`;
+const nav = PAGES.filter((p) => p.nav);
+const pageTitle = path === '' ? `${SITE.name} — ${title}` : `${title} · ${SITE.name}`;
+const canonical = index ? new URL(Astro.url.pathname, Astro.site) : null;
+const image = new URL(url(`og/${og}.png`), Astro.site);
+---
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{pageTitle}</title>
+    {index && <meta name="description" content={description} />}
+    <link rel="icon" href={url('favicon.svg')} type="image/svg+xml" />
+    <link rel="preload" href={url('fonts/InstrumentSerif-Regular-latin.woff2')} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={url('fonts/JetBrainsMono-Regular-latin.woff2')} as="font" type="font/woff2" crossorigin />
+    <Meta
+      title={pageTitle}
+      description={description}
+      canonical={canonical}
+      ogType={kind === 'study' ? 'article' : kind === 'home' ? 'profile' : 'website'}
+      image={image}
+      imageAlt={ogAlt}
+      date={date}
+    />
+    {canonical && (
+      <Schema kind={kind} title={pageTitle} description={description} canonical={canonical} image={image} projects={projects} date={date} />
+    )}
+    <script is:inline set:html={boot} />
+  </head>
+  <body class={page ? `page-${page}` : undefined}>
+    <a class="skip" href="#main">Skip to content</a>
+    <header class="site-header">
+      <div class="bar shell">
+        <a class="brand" href={url('')}>{SITE.handle}<span class="cursor" aria-hidden="true"></span></a>
+        <nav class="site-nav" aria-label="Sections">
+          {nav.map(({ path: p, label }) => (
+            <a href={url(p)} aria-current={p === path ? 'page' : undefined}>{label}</a>
+          ))}
+          <a class="out" href={profile.links.github}>GitHub</a>
+        </nav>
+        <LensControl />
+        <ThemeToggle />
+      </div>
+    </header>
+
+    <main id="main">
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <div class="bar shell">
+        <p class="colophon">
+          No trackers, no CDN, no framework runtime. Built with Astro from
+          <a href={SITE.source}>public source</a>. Numbers verified <time datetime={profile.verifiedOn}>{profile.verifiedOn}</time>.
+        </p>
+        <nav aria-label="Elsewhere">
+          <a href={profile.links.github}>GitHub</a>
+          <a href={profile.links.linkedin}>LinkedIn</a>
+        </nav>
+      </div>
+    </footer>
+
+    <script>
+      // The theme toggle. Hidden until this runs, so a reader without
+      // JavaScript is never shown a control that cannot work.
+      (() => {
+        const root = document.documentElement;
+        const btn = document.getElementById('theme-toggle') as HTMLButtonElement | null;
+        if (!btn) return;
+        const media = matchMedia('(prefers-color-scheme: dark)');
+        const now = () => root.dataset.theme || (media.matches ? 'dark' : 'light');
+        const sync = () => {
+          const dark = now() === 'dark';
+          btn.setAttribute('aria-pressed', String(dark));
+          const label = btn.querySelector('span');
+          if (label) label.textContent = dark ? 'Light theme' : 'Dark theme';
+          if (root.dataset.theme) {
+            for (const m of document.querySelectorAll<HTMLMetaElement>('meta[name="theme-color"]')) {
+              m.content = dark ? '#0e0d0b' : '#f4f2ec';
+            }
+          }
+        };
+        btn.hidden = false;
+        sync();
+        btn.addEventListener('click', () => {
+          root.dataset.theme = now() === 'dark' ? 'light' : 'dark';
+          try {
+            localStorage.setItem('ss-theme', root.dataset.theme);
+          } catch {}
+          sync();
+        });
+        media.addEventListener('change', sync);
+      })();
+
+      // The lens. The radios are the state and CSS does the work; this only
+      // mirrors the choice into the hash, so `#data` is a link you can send,
+      // and binds the number keys the hero's footer shows.
+      (() => {
+        const radios = [...document.querySelectorAll<HTMLInputElement>('input[name="lens"]')];
+        if (!radios.length) return;
+        const byId = (id: string | undefined) => radios.find((r) => r.value === id);
+        const fromHash = () => {
+          const r = byId(location.hash.slice(1));
+          if (r && !r.checked) r.checked = true;
+        };
+        fromHash();
+        addEventListener('hashchange', fromHash);
+        for (const r of radios) {
+          r.addEventListener('change', () => {
+            if (!r.checked) return;
+            const hash = r.value === 'all' ? '' : `#${r.value}`;
+            history.replaceState(null, '', `${location.pathname}${location.search}${hash}`);
+          });
+        }
+        const typing = (t: EventTarget | null) =>
+          t instanceof HTMLElement && /^(input|textarea|select)$/i.test(t.tagName) && (t as HTMLInputElement).type !== 'radio';
+        document.addEventListener('keydown', (e) => {
+          if (e.altKey || e.ctrlKey || e.metaKey || typing(e.target)) return;
+          if (e.key === 't') {
+            document.getElementById('theme-toggle')?.click();
+            return;
+          }
+          const label = document.querySelector<HTMLElement>(`[data-key="${CSS.escape(e.key)}"]`);
+          const r = label && byId(label.dataset.lens);
+          if (r) {
+            r.checked = true;
+            r.dispatchEvent(new Event('change'));
+          }
+        });
+      })();
+    </script>
+  </body>
+</html>

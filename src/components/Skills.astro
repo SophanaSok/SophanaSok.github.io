@@ -1,0 +1,63 @@
+---
+/* Three columns, each an inventory of what the projects on this page
+ * actually demonstrate. Every entry traces to a project or a page here; the
+ * column the lens picks moves first and takes the accent rule. Nothing is
+ * listed that the work cannot show. */
+import Block from './Block.astro';
+
+const COLUMNS = [
+  {
+    lens: 'swe',
+    title: 'Systems & tooling',
+    order: '--o-swe:1;--o-data:3;--o-ml:3',
+    items: [
+      ['Rust', 'two TUIs, 55k lines, 1,429 tests between them'],
+      ['ratatui / crossterm', 'cell-grid layout, titled blocks, themes as data'],
+      ['TypeScript & React 19', 'a 33k-line browser app with a Web Worker core'],
+      ['C++20 / raylib, Lua / LÖVE', 'games, for the languages without a safety net'],
+      ['Release engineering', 'crates.io, Homebrew, Scoop, nixpkgs; one CI pipeline per repo'],
+      ['Testing', '#[test] on every module, Playwright + axe end to end, doctest'],
+    ],
+  },
+  {
+    lens: 'data',
+    title: 'Data & pipelines',
+    order: '--o-swe:2;--o-data:1;--o-ml:2',
+    items: [
+      ['Python 3.12, async httpx, FastAPI', 'sixty sources behind a semaphore, backoff and caps'],
+      ['SQLite', 'WAL, FTS5, keyset pagination, idempotent upserts by constraint'],
+      ['Dedupe & matching', 'canonical URL, title fingerprints, Jaccard; deterministic key matching'],
+      ['Data QA', 'drift vs. systemic field loss, policy-gated recovery, provenance on every value'],
+      ['IndexedDB / Dexie, Web Workers', 'analysis cached by content hash, tables virtualised'],
+      ['Ops', 'Docker, Fly.io, health checks, in-process scheduling'],
+    ],
+  },
+  {
+    lens: 'ml',
+    title: 'LLMs & inference',
+    order: '--o-swe:3;--o-data:2;--o-ml:1',
+    items: [
+      ['Cost per delivered result', 'per-model cost per passing test, escalation and retry rates'],
+      ['Six agent integrations', 'Claude Code, Codex CLI, Copilot, Gemini CLI, OpenCode, Ollama'],
+      ['Local inference', 'llama.cpp and Ollama on a 16 GB GPU; VRAM budgeting, one model at a time'],
+      ['Tokens and sampling', 'tokenizers, logprobs and attention studied on the model, not the slides'],
+      ['Similarity & scoring', 'token-set Jaccard for near-duplicates, weighted keyword categorisation'],
+      ['Adaptive systems', 'per-skill Elo targeting a success rate, spaced repetition'],
+    ],
+  },
+] as const;
+---
+<div class="skills">
+  {COLUMNS.map((c, i) => (
+    <Block title={c.title} n={`0${i + 1}`} level={3} class="skills-col lensed" attrs={{ 'data-lens': c.lens, style: c.order }}>
+      <dl>
+        {c.items.map(([k, v]) => (
+          <div>
+            <dt>{k}</dt>
+            <dd>{v}</dd>
+          </div>
+        ))}
+      </dl>
+    </Block>
+  ))}
+</div>

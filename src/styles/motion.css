@@ -1,0 +1,25 @@
+/* Scroll-driven reveals, as a progressive enhancement: a browser without
+ * `animation-timeline` shows the page still, and so does a reader who asked
+ * for reduced motion, through the global rule in tokens.css. */
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .reveal {
+      animation: reveal linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 28%;
+    }
+  }
+}
+
+@keyframes reveal {
+  from {
+    opacity: 0.2;
+    transform: translateY(0.6rem);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}

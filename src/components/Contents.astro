@@ -1,0 +1,28 @@
+---
+import type { MarkdownHeading } from 'astro';
+
+/* The reader's own contents pane, borrowed. Every entry comes from the
+ * headings Astro extracted from the document rendered on this page, so a
+ * fragment here always names an id that is actually on it. */
+interface Props {
+  headings: MarkdownHeading[];
+  /** Deepest heading level to list. */
+  depth?: number;
+  layout?: 'rail' | 'strip';
+  label?: string;
+}
+const { headings, depth = 3, layout = 'rail', label = 'Contents' } = Astro.props;
+const items = headings.filter((h) => h.depth > 1 && h.depth <= depth);
+---
+{
+  items.length > 1 && (
+    <nav class={`contents ${layout === 'strip' ? 'contents-strip' : ''}`} aria-label={label}>
+      <p class="contents-label">{label}</p>
+      <ol>
+        {items.map((h) => (
+          <li class={`d${h.depth}`}><a href={`#${h.slug}`}>{h.text}</a></li>
+        ))}
+      </ol>
+    </nav>
+  )
+}

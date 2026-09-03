@@ -1,0 +1,19 @@
+---
+/* The four ways to read the page, as radios.
+ *
+ * The radios are the state: `lens.css` reorders, dims and re-words the page
+ * from `:root:has(#lens-x:checked)`, so the control works without a script.
+ * The script in Base.astro only mirrors the choice into the URL hash and
+ * binds the number keys. Labels elsewhere on the page (the hero's footer)
+ * point at these same inputs. */
+import { LENSES } from '../lib/site';
+---
+<fieldset class="lens">
+  <legend class="visually-hidden">Read this page as a candidate for</legend>
+  {LENSES.map((l) => (
+    <span class="lens-opt">
+      <input type="radio" name="lens" id={`lens-${l.id}`} value={l.id} checked={l.id === 'all'} class="visually-hidden" />
+      <label for={`lens-${l.id}`}><kbd aria-hidden="true">{l.key}</kbd>{l.label}</label>
+    </span>
+  ))}
+</fieldset>

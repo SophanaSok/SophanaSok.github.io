@@ -1,0 +1,115 @@
+/* The role lens.
+ *
+ * Four radios in the header are the state. Under a lens, an element with
+ * `.lensed` takes the order its `--o-<lens>` custom property gives it, an
+ * element outside the lens is dimmed (never hidden: nothing leaves the tab
+ * order and nothing a reader wants disappears), and a `[data-for]` sentence
+ * shows only under its lens. `order` changes paint order and not DOM order,
+ * which is the trade the dimming pays for: a keyboard user tabs through
+ * cards in source order while the eye sees them ranked. */
+
+.lens {
+  display: inline-flex;
+  margin: 0;
+  padding: 2px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  font-family: var(--font-mono);
+  font-size: var(--step--2);
+}
+
+.lens-opt label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45em;
+  padding: 0.3em 0.7em;
+  border-radius: var(--radius-sm);
+  color: var(--muted);
+  cursor: pointer;
+  transition: color var(--fast) var(--ease), background var(--fast) var(--ease);
+}
+
+.lens-opt label:hover {
+  color: var(--fg);
+}
+
+.lens-opt kbd {
+  font: inherit;
+  color: var(--accent);
+}
+
+.lens-opt input:checked + label {
+  background: var(--fg);
+  color: var(--bg);
+}
+
+.lens-opt input:checked + label kbd {
+  color: var(--bg);
+  opacity: 0.7;
+}
+
+.lens-opt input:focus-visible + label {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+/* ---- Ordering ------------------------------------------------------------- */
+
+.lensed {
+  order: var(--o, 0);
+  transition: opacity var(--slow) var(--ease);
+}
+
+:root:has(#lens-swe:checked) .lensed {
+  --o: var(--o-swe, 50);
+}
+
+:root:has(#lens-data:checked) .lensed {
+  --o: var(--o-data, 50);
+}
+
+:root:has(#lens-ml:checked) .lensed {
+  --o: var(--o-ml, 50);
+}
+
+/* ---- Dimming --------------------------------------------------------------- */
+
+:root:has(#lens-swe:checked) .lensed:not([data-lens~='swe']),
+:root:has(#lens-data:checked) .lensed:not([data-lens~='data']),
+:root:has(#lens-ml:checked) .lensed:not([data-lens~='ml']) {
+  opacity: 0.55;
+}
+
+:root:has(#lens-swe:checked) .lensed:not([data-lens~='swe']):is(:hover, :focus-within),
+:root:has(#lens-data:checked) .lensed:not([data-lens~='data']):is(:hover, :focus-within),
+:root:has(#lens-ml:checked) .lensed:not([data-lens~='ml']):is(:hover, :focus-within) {
+  opacity: 1;
+}
+
+/* The one in focus under this lens gets the accent rule. */
+:root:has(#lens-swe:checked) .lensed[data-lens~='swe'],
+:root:has(#lens-data:checked) .lensed[data-lens~='data'],
+:root:has(#lens-ml:checked) .lensed[data-lens~='ml'] {
+  --rule: var(--accent);
+}
+
+/* ---- Words that change ----------------------------------------------------- */
+
+[data-for] {
+  display: none;
+}
+
+:root:has(#lens-all:checked) [data-for='all'],
+:root:has(#lens-swe:checked) [data-for='swe'],
+:root:has(#lens-data:checked) [data-for='data'],
+:root:has(#lens-ml:checked) [data-for='ml'] {
+  display: revert;
+}
+
+/* A browser without :has() reads the page as "all". */
+@supports not selector(:has(a)) {
+  [data-for='all'] {
+    display: revert;
+  }
+}

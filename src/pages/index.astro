@@ -1,0 +1,136 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import Shell from '../components/Shell.astro';
+import Block from '../components/Block.astro';
+import Ledger from '../components/Ledger.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import Skills from '../components/Skills.astro';
+import { LENSES, RANKED } from '../lib/site';
+import profile from '../content/profile.json';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const all = await getCollection('projects');
+const studies = new Set((await getCollection('caseStudies')).map((s) => s.data.project));
+// Flagships in the order they rank under SWE, which is also the order the
+// page reads them in under "all".
+const byRank = (l: (typeof RANKED)[number]) => (a: (typeof all)[number], b: (typeof all)[number]) =>
+  (a.data.lens[l]?.rank ?? 99) - (b.data.lens[l]?.rank ?? 99);
+const flagships = all.filter((p) => p.data.tier === 'flagship').sort(byRank('swe'));
+const secondary = all.filter((p) => p.data.tier === 'secondary').sort(byRank('swe'));
+
+const WRITING = [
+  {
+    href: 'https://sophanasok.github.io/ai-usage-tui-site/what-a-max-subscription-bought/',
+    title: 'What a Max subscription bought',
+    what: 'A month of real usage, priced per passing test, on the ai-usage-tui site.',
+  },
+  {
+    href: 'https://marquee-markdown.com/why-not-glow/',
+    title: 'Why not glow',
+    what: 'The case for a contents pane, and what it took to keep glow’s keys.',
+  },
+  {
+    href: 'https://github.com/SophanaSok/json-data-drift-analyzer#privacy-model',
+    title: 'Privacy model',
+    what: 'Why a QA tool for someone else’s data has to run entirely in the browser.',
+  },
+];
+---
+<Base
+  title={profile.roles.all.replace(/\.$/, '')}
+  path=""
+  description={profile.description}
+  og="home"
+  ogAlt="Sophana Sok: a terminal card listing four flagship projects with their test counts"
+  kind="home"
+  projects={flagships}
+  page="home"
+>
+  <div class="shell">
+    <section class="hero">
+      <div class="hero-copy">
+        <div class="hero-title">
+          <p class="eyebrow">
+            <span class="chip">~/sophana-sok</span>
+            <span class="chip chip-accent">open to SWE · Data · AI/ML</span>
+          </p>
+          <h1>{profile.name}<span class="cursor" aria-hidden="true"></span></h1>
+          <p class="hero-role">
+            {LENSES.map((l) => <span data-for={l.id}>{profile.roles[l.id]}</span>)}
+          </p>
+          <p class="lede">{profile.lede}</p>
+          <p class="hero-now"><b>now</b> · {profile.now}</p>
+          <p class="actions">
+            <a class="btn btn-primary" href="#projects">View projects</a>
+            <a class="btn" href={profile.links.github}>GitHub ↗</a>
+            <a class="btn" href={profile.links.linkedin}>LinkedIn ↗</a>
+          </p>
+        </div>
+        <Shell flagships={flagships} />
+      </div>
+    </section>
+
+    <Block title="proof" n="00" id="proof" class="section-block reveal">
+      <p class="section-lead"><span class="prompt" aria-hidden="true">❯</span>Numbers you can recount, not adjectives.</p>
+      <Ledger projects={flagships} />
+    </Block>
+
+    <Block title="projects" n="01" id="projects" class="section-block reveal">
+      <p class="section-lead">
+        <span class="prompt" aria-hidden="true">❯</span>
+        <span data-for="all">Four flagships, each shipped, versioned and tested.</span>
+        <span data-for="swe">Ranked for a software engineering reader.</span>
+        <span data-for="data">Ranked for a data engineering reader.</span>
+        <span data-for="ml">Ranked for an AI/ML engineering reader.</span>
+      </p>
+      <div class="cards">
+        {flagships.map((p, i) => <ProjectCard project={p} n={`0${i + 1}`} study={studies.has(p.id)} />)}
+      </div>
+      <ol class="more" aria-label="More projects">
+        {secondary.map((p) => (
+          <li class="lensed" data-lens={RANKED.filter((l) => p.data.lens[l]).join(' ')} style={RANKED.filter((l) => p.data.lens[l]).map((l) => `--o-${l}:${p.data.lens[l]!.rank}`).join(';')}>
+            <p class="name"><a href={p.data.repo}>{p.data.name}</a><small>{p.data.language}</small></p>
+            <p class="what"><b>{p.data.tagline}</b> {p.data.highlights[0]}</p>
+            <a class="go" href={p.data.repo}>source ↗</a>
+          </li>
+        ))}
+      </ol>
+      <p class="note">
+        Everything listed has a public repository or a live URL. Work that is not public is not here.
+        <a href={`${base}/projects/`}>The full table →</a>
+      </p>
+    </Block>
+
+    <Block title="skills" n="02" id="skills" class="section-block reveal">
+      <p class="section-lead"><span class="prompt" aria-hidden="true">❯</span>Only what the work above can show.</p>
+      <Skills />
+      <p class="note">
+        Not claimed: model training, fine-tuning, or CUDA kernels. The LLM work here is on the inference and
+        economics side, on local hardware and in production cost data.
+      </p>
+    </Block>
+
+    <Block title="writing" n="03" id="writing" class="section-block reveal">
+      <ul class="writing">
+        {WRITING.map((w) => (
+          <li>
+            <a href={w.href}>{w.title}</a>
+            <span>{w.what}</span>
+          </li>
+        ))}
+      </ul>
+    </Block>
+
+    <Block title="contact" n="04" id="contact" class="section-block reveal">
+      <p class="contact-line">
+        Open to <em>{LENSES.map((l) => <span data-for={l.id}>{l.role}</span>)}</em> roles. The fastest way to
+        judge the work is to read it.
+      </p>
+      <p class="actions">
+        <a class="btn btn-primary" href={profile.links.github}>GitHub ↗</a>
+        <a class="btn" href={profile.links.linkedin}>LinkedIn ↗</a>
+      </p>
+    </Block>
+  </div>
+</Base>

@@ -1,0 +1,46 @@
+---
+/* The tags a page states about itself to something that is not a browser.
+ *
+ * `canonical` is null for a page that is not a URL anyone can visit. Such a
+ * page claims no address and asks not to be indexed, rather than pointing a
+ * canonical at a URL that would 404 if a crawler followed it. */
+import { SITE } from '../lib/site';
+
+interface Props {
+  title: string;
+  description: string;
+  canonical: URL | null;
+  ogType: 'website' | 'article' | 'profile';
+  image: URL;
+  imageAlt: string;
+  date?: string;
+}
+const { title, description, canonical, ogType, image, imageAlt, date } = Astro.props;
+---
+{canonical ? <link rel="canonical" href={canonical} /> : <meta name="robots" content="noindex, follow" />}
+<meta name="theme-color" content="#f4f2ec" media="(prefers-color-scheme: light)" />
+<meta name="theme-color" content="#0e0d0b" media="(prefers-color-scheme: dark)" />
+<meta name="author" content={SITE.name} />
+
+<meta property="og:type" content={ogType} />
+<meta property="og:site_name" content={SITE.name} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+{canonical && <meta property="og:url" content={canonical} />}
+<meta property="og:image" content={image} />
+<meta property="og:image:alt" content={imageAlt} />
+<meta property="og:image:type" content="image/png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+{ogType === 'article' && date && (
+  <>
+    <meta property="article:published_time" content={date} />
+    <meta property="article:modified_time" content={date} />
+  </>
+)}
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={image} />
+<meta name="twitter:image:alt" content={imageAlt} />

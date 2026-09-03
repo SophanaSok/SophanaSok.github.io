@@ -1,0 +1,27 @@
+{
+  "name": "otacli",
+  "tagline": "A terminal anime client, forked with its licence honoured.",
+  "summary": "A Python terminal client that streams through mpv and yt-dlp, previews with chafa, syncs progress with AniList, keeps an offline library, and installs on Windows through an Inno Setup installer. A GPL-3.0 fork of doccli that carries an explicit COPYRIGHT file crediting the original, because a fork's first obligation is to say what it is.",
+  "tier": "secondary",
+  "language": "Python",
+  "stack": ["Python", "mpv", "yt-dlp", "AniList API", "Inno Setup"],
+  "version": "0.1.1",
+  "verifiedOn": "2026-09-03",
+  "repo": "https://github.com/SophanaSok/otacli",
+  "license": "GPL-3.0",
+  "metrics": [
+    {
+      "label": "commits",
+      "value": 430,
+      "how": "git rev-list --count HEAD on main, 2026-09-03",
+      "href": "https://github.com/SophanaSok/otacli/commits/main"
+    }
+  ],
+  "lens": {
+    "swe": { "rank": 5, "angle": "430 commits on a GPL fork that keeps its attribution straight, with a Windows installer and AniList sync." }
+  },
+  "highlights": [
+    "Explicit COPYRIGHT attribution to the upstream project, kept under the GPL-3.0 the original chose.",
+    "Ships a Windows installer, so a terminal tool reaches people who do not build from source."
+  ]
+}

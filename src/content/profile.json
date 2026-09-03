@@ -1,0 +1,17 @@
+{
+  "name": "Sophana Sok",
+  "now": "Data Specialist doing data QA · B.S. Computer Science, WGU",
+  "lede": "I build terminal tools in Rust, data pipelines in Python and TypeScript, and the tests that keep them honest. Everything on this page is public, versioned, and counted by a command you can run yourself.",
+  "roles": {
+    "all": "ships terminal tools, data pipelines, and the tests that prove them.",
+    "swe": "writes Rust and TypeScript that ships to package registries, with the tests to show for it.",
+    "data": "builds pipelines whose numbers you can audit, from scrape to dedupe to export.",
+    "ml": "measures what LLMs actually cost per passing test, and runs them locally to find out."
+  },
+  "links": {
+    "github": "https://github.com/SophanaSok",
+    "linkedin": "https://linkedin.com/in/sophana-sok"
+  },
+  "description": "Sophana Sok builds terminal tools in Rust and data pipelines in Python and TypeScript. Shipped, tested, counted: every number names how it was measured.",
+  "verifiedOn": "2026-09-03"
+}

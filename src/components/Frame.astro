@@ -1,0 +1,40 @@
+---
+/* A screenshot in terminal chrome.
+ *
+ * Three of the trusted screenshots are painted in exactly the dark page colour
+ * and one in exactly the light page colour, so the frame supplies a mat rather
+ * than a hairline: whichever way round the page is, the image sits on a field
+ * a step away from it and keeps its edges.
+ */
+interface Props {
+  src: string;
+  alt: string;
+  width: number;
+  height: number;
+  /** Shown in the title bar; omit for no chrome. */
+  label?: string;
+  caption?: string;
+  /** `full` breaks the frame out to the page edges inside a `.prose` grid. */
+  class?: string;
+  loading?: 'eager' | 'lazy';
+  fetchpriority?: 'high' | 'auto';
+}
+const { src, alt, width, height, label, caption, class: klass, loading = 'lazy', fetchpriority } = Astro.props;
+---
+<figure class={klass}>
+  <div class="frame">
+    {label && <div class="frame-bar"><span class="label">{label}</span></div>}
+    <div class="frame-body">
+      <img
+        src={src}
+        alt={alt}
+        width={width}
+        height={height}
+        loading={loading}
+        fetchpriority={fetchpriority}
+        decoding="async"
+      />
+    </div>
+  </div>
+  {caption && <figcaption>{caption}</figcaption>}
+</figure>

@@ -1,0 +1,341 @@
+/* Reset, page shell, and the content grid the rendered markdown falls into. */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+html {
+  background: var(--bg);
+  color: var(--fg);
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-text);
+  font-size: var(--step-0);
+  line-height: var(--leading);
+  text-rendering: optimizeLegibility;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+img,
+svg,
+video {
+  max-width: 100%;
+  height: auto;
+}
+
+a {
+  color: var(--accent);
+  text-underline-offset: 0.18em;
+  text-decoration-thickness: 1px;
+}
+
+a:hover {
+  text-decoration-thickness: 2px;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.skip {
+  position: absolute;
+  inset-inline-start: var(--s-4);
+  top: var(--s-2);
+  z-index: 10;
+  padding: var(--s-2) var(--s-4);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font: 500 var(--step--1) / 1 var(--font-mono);
+  transform: translateY(-200%);
+  transition: transform var(--fast) var(--ease);
+}
+
+.skip:focus-visible {
+  transform: translateY(0);
+}
+
+/* ---- Shell -------------------------------------------------------------- */
+
+.shell {
+  width: min(100% - 2 * var(--gutter), 64rem);
+  margin-inline: auto;
+}
+
+.shell-text {
+  max-width: var(--measure);
+}
+
+main {
+  flex: 1;
+}
+
+/* ---- Content grid ------------------------------------------------------- */
+/* Rendered markdown gives us no wrappers, so the grid itself decides which
+ * elements may break out of the reading column. A table or a code card takes
+ * the `wide` track without any class on the markup. */
+
+.prose {
+  display: grid;
+  grid-template-columns:
+    [full-start wide-start] minmax(0, 1fr)
+    [text-start] min(var(--measure), 100%) [text-end]
+    minmax(0, 1fr) [wide-end full-end];
+  row-gap: var(--s-4);
+  align-content: start;
+}
+
+.prose > * {
+  grid-column: text;
+  margin-block: 0;
+  min-width: 0;
+}
+
+.prose > table,
+.prose > .astro-code,
+.prose > .pre-wrap,
+.prose > .wide {
+  grid-column: wide;
+}
+
+.prose > .full {
+  grid-column: full;
+}
+
+/* Beside a rail the reading column is centred in what is left; a block dropped
+ * into a left-aligned section on the home page starts where the section does. */
+.prose-flush {
+  grid-template-columns:
+    [full-start wide-start text-start] min(var(--measure), 100%) [text-end]
+    minmax(0, 1fr) [wide-end full-end];
+}
+
+/* Grid items do not margin-collapse, so the vertical rhythm is stated once
+ * here rather than inherited from each element's own margins. */
+.prose > h1 {
+  margin-block-start: var(--s-2);
+}
+
+.prose > h2 {
+  margin-block-start: var(--s-7);
+}
+
+.prose > h3 {
+  margin-block-start: var(--s-5);
+}
+
+.prose > h4,
+.prose > h5,
+.prose > h6 {
+  margin-block-start: var(--s-4);
+}
+
+.prose > :is(h1, h2, h3, h4, h5, h6) + :not(h1, h2, h3, h4, h5, h6) {
+  margin-block-start: calc(-1 * var(--s-2));
+}
+
+.prose > hr {
+  margin-block: var(--s-5);
+}
+
+/* ---- Typography --------------------------------------------------------- */
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  line-height: var(--leading-tight);
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+
+h1 {
+  font-size: var(--step-4);
+}
+
+h2 {
+  font-size: var(--step-3);
+}
+
+h3 {
+  font-size: var(--step-2);
+}
+
+h4 {
+  font-size: var(--step-1);
+}
+
+p,
+li {
+  text-wrap: pretty;
+}
+
+ul,
+ol {
+  padding-inline-start: 1.35em;
+}
+
+li + li {
+  margin-block-start: var(--s-2);
+}
+
+strong {
+  font-weight: 650;
+  color: var(--fg);
+}
+
+blockquote {
+  margin: 0;
+  padding: var(--s-1) var(--s-4);
+  border-inline-start: 2px solid var(--accent);
+  color: var(--muted);
+}
+
+hr {
+  border: 0;
+  border-top: 1px solid var(--border);
+}
+
+/* ---- Code --------------------------------------------------------------- */
+
+pre,
+code,
+kbd,
+samp {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+pre {
+  margin: 0;
+  padding: var(--s-4) var(--s-5);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow-x: auto;
+  line-height: var(--leading-snug);
+  tab-size: 2;
+}
+
+:not(pre) > code {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 0.08em 0.34em;
+  border-radius: var(--radius-sm);
+  overflow-wrap: break-word;
+}
+
+/* Shiki emits both themes as custom properties; pick one per palette so the
+ * explicit toggle works as well as the system setting. */
+.astro-code,
+.astro-code span {
+  color: var(--shiki-light);
+  background-color: transparent;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .astro-code,
+  :root:not([data-theme='light']) .astro-code span {
+    color: var(--shiki-dark);
+  }
+}
+
+:root[data-theme='dark'] .astro-code,
+:root[data-theme='dark'] .astro-code span {
+  color: var(--shiki-dark);
+}
+
+.astro-code {
+  background: var(--surface) !important;
+}
+
+/* ---- Tables ------------------------------------------------------------- */
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: var(--step--1);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+th,
+td {
+  padding: var(--s-2) var(--s-3);
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid var(--border);
+}
+
+tr:last-child td {
+  border-bottom: 0;
+}
+
+th {
+  background: var(--surface);
+  font: 500 var(--step--2) / 1.4 var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-eyebrow);
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+td {
+  overflow-wrap: anywhere;
+}
+
+/* Narrower than the table wants to be, scrolling it beats squeezing a column
+ * down to one word per line. A block table still lays its columns out. */
+@media (max-width: 52rem) {
+  .prose > table {
+    display: block;
+    overflow-x: auto;
+  }
+
+  .prose > table td {
+    overflow-wrap: normal;
+  }
+}
+
+/* ---- Figures ------------------------------------------------------------ */
+
+figure {
+  margin: 0;
+}
+
+figcaption {
+  margin-block-start: var(--s-3);
+  color: var(--muted);
+  font-size: var(--step--1);
+  text-wrap: pretty;
+}

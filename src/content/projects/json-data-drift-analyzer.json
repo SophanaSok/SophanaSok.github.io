@@ -1,0 +1,77 @@
+{
+  "name": "JSON Data Drift Analyzer",
+  "tagline": "Turns \"something looks off about this run\" into an evidenced answer.",
+  "summary": "A browser-first QA tool for scraped-data pipeline exports. Upload a known-good baseline and a suspect latest export; it diffs them record by record, separates systemic field loss (a broken selector) from scattered drift, recovers only what a per-source policy allows, routes everything else to a human decision queue with an append-only log, and produces six audit-ready artifacts with a SHA-256 manifest. Everything runs in a Web Worker in your browser. No backend, no upload, no telemetry.",
+  "tier": "flagship",
+  "language": "TypeScript",
+  "stack": [
+    "TypeScript",
+    "React 19",
+    "Vite",
+    "Zustand",
+    "Dexie / IndexedDB",
+    "MiniSearch",
+    "Web Workers",
+    "Playwright",
+    "axe-core",
+    "Tailwind"
+  ],
+  "version": "1.8.0",
+  "verifiedOn": "2026-09-03",
+  "repo": "https://github.com/SophanaSok/json-data-drift-analyzer",
+  "live": "https://sophanasok.github.io/json-data-drift-analyzer/",
+  "license": "MIT",
+  "metrics": [
+    {
+      "label": "assertions",
+      "value": 2682,
+      "how": "git ls-files | grep -E '\\.(test|spec)\\.tsx?$' | xargs grep -hoE '\\bexpect\\(' | wc -l, at tag v1.8.0"
+    },
+    {
+      "label": "test files",
+      "value": 84,
+      "how": "git ls-files | grep -cE '\\.(test|spec)\\.tsx?$', at tag v1.8.0"
+    },
+    {
+      "label": "lines of TypeScript",
+      "value": 33287,
+      "how": "git ls-files 'src/*.ts' 'src/*.tsx' | xargs cat | wc -l, at tag v1.8.0"
+    },
+    {
+      "label": "commits",
+      "value": 196,
+      "how": "git rev-list --count HEAD, at tag v1.8.0",
+      "href": "https://github.com/SophanaSok/json-data-drift-analyzer/commits/main"
+    },
+    {
+      "label": "releases",
+      "value": 9,
+      "how": "gh api repos/SophanaSok/json-data-drift-analyzer/releases --jq length",
+      "href": "https://github.com/SophanaSok/json-data-drift-analyzer/releases"
+    }
+  ],
+  "channels": [
+    {
+      "name": "Live on GitHub Pages",
+      "kind": "live",
+      "href": "https://sophanasok.github.io/json-data-drift-analyzer/"
+    }
+  ],
+  "lens": {
+    "data": {
+      "rank": 1,
+      "angle": "Diffs two pipeline exports record by record, separates systemic field loss from scattered drift, and recovers only what a per-source policy allows, with provenance on every value."
+    },
+    "swe": {
+      "rank": 3,
+      "angle": "33k lines of TypeScript and React 19 with 2,682 test assertions, Playwright end-to-end runs that include axe accessibility checks, a Web Worker analysis path and a build-time Content Security Policy."
+    }
+  },
+  "highlights": [
+    "Matching is exact and deterministic: primary key first, fallback keys over the remainder, ambiguity judged against the whole reference population so a fallback can never pick the wrong record.",
+    "QA reports, never acts. Automation may only backfill a policy-approved field that is strictly blank with exactly one baseline match; overwriting a value takes a person and a reason.",
+    "Source profiles resolve in layers: one base policy, one small delta per source, local overrides that are flagged stale when the repo moves on. A policy hash is stamped into every finding, decision and export.",
+    "Analysis runs once in a Web Worker, is cached in IndexedDB keyed by file hashes and configuration, and every large table is virtualised.",
+    "Every export passes a secret scan before it is handed back; over plain HTTP the app says it cannot prove which files it read rather than hiding it."
+  ]
+}

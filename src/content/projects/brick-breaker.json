@@ -1,0 +1,34 @@
+{
+  "name": "brick-breaker",
+  "tagline": "Breakout in C++20 and raylib, with a boss fight.",
+  "summary": "A neon-vector brick-breaker in modern C++ against raylib: a hand-built mecha boss, screen-shake-driven slow motion, a slide-levelling system that persists, an endless procedurally generated campaign, and doctest tests wired into CMake. The one project here in a language with neither a garbage collector nor a borrow checker.",
+  "tier": "secondary",
+  "language": "C++",
+  "stack": [
+    "C++20",
+    "raylib",
+    "CMake",
+    "doctest",
+    "nlohmann/json"
+  ],
+  "verifiedOn": "2026-09-03",
+  "repo": "https://github.com/SophanaSok/brick-breaker",
+  "metrics": [
+    {
+      "label": "commits",
+      "value": 9,
+      "how": "git rev-list --count HEAD on main, 2026-09-03",
+      "href": "https://github.com/SophanaSok/brick-breaker/commits/main"
+    }
+  ],
+  "lens": {
+    "swe": {
+      "rank": 8,
+      "angle": "C++20 and raylib: a procedurally generated campaign, a boss fight, doctest tests, and no runtime to hide behind."
+    }
+  },
+  "highlights": [
+    "Endless campaign generated procedurally from JSON level definitions, with a hand-built mecha boss.",
+    "Dependencies pulled by CMake FetchContent and tests in doctest, so a clean checkout builds and tests with two commands."
+  ]
+}

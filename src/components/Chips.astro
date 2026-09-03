@@ -1,0 +1,11 @@
+---
+interface Props {
+  items: readonly string[];
+  label: string;
+  class?: string;
+}
+const { items, label, class: klass } = Astro.props;
+---
+<ul class={['chips', klass].filter(Boolean).join(' ')} aria-label={label}>
+  {items.map((item) => <li class="chip">{item}</li>)}
+</ul>

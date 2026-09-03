@@ -1,0 +1,67 @@
+name: Pages
+
+on:
+  push:
+    branches: [main]
+  # Build and check a proposed change without deploying it. The social cards
+  # are rasterised with whatever fonts the runner has, so the first time this
+  # workflow sees a change should not also be the first time it ships one.
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One group per ref, so a pull request build only ever cancels an older build
+# of the same pull request and never the deploy that a merge just started.
+concurrency:
+  group: pages-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      # The cards are drawn in a monospace face; the runner needs one the
+      # rasteriser will find under the name the SVG asks for.
+      - name: Fonts the social cards draw with
+        run: sudo apt-get update && sudo apt-get install -y fonts-jetbrains-mono fonts-dejavu-core
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .node-version
+          cache: npm
+
+      - run: npm ci
+      - run: npm run verify
+
+      # On a pull request the card is the thing worth looking at, so it is
+      # offered on its own rather than buried in a Pages artifact.
+      - if: github.event_name == 'pull_request'
+        uses: actions/upload-artifact@v5
+        with:
+          name: social-cards
+          path: dist/og/
+
+      - if: github.event_name != 'pull_request'
+        uses: actions/configure-pages@v6
+      - if: github.event_name != 'pull_request'
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: dist
+
+  deploy:
+    if: github.event_name != 'pull_request'
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5

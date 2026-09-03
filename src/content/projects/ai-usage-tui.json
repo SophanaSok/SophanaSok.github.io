@@ -1,0 +1,105 @@
+{
+  "name": "ai-usage-tui",
+  "tagline": "What each AI coding model actually costs per passing test.",
+  "summary": "A terminal dashboard that reads the local usage logs of Claude Code, Codex CLI, GitHub Copilot, Gemini CLI, OpenCode and Ollama and answers a harder question than token counts: was the expensive model worth it? A shipped Claude Code hook turns real test runs into pass/fail events, so cost is measured per delivered result, with retry, escalation and review-defect rates beside it. A cost the tool cannot establish stays unknown rather than rendering as $0.00. Everything is read locally; nothing is sent anywhere.",
+  "tier": "flagship",
+  "language": "Rust",
+  "stack": [
+    "Rust",
+    "ratatui",
+    "SQLite",
+    "JSONL tailing",
+    "GitHub Actions",
+    "cargo-dist-style releases"
+  ],
+  "version": "0.15.0",
+  "verifiedOn": "2026-09-03",
+  "repo": "https://github.com/SophanaSok/ai-usage-tui",
+  "site": "https://sophanasok.github.io/ai-usage-tui-site/",
+  "license": "MIT",
+  "metrics": [
+    {
+      "label": "tests",
+      "value": 532,
+      "how": "grep -rhoE '#\\[(tokio::)?test\\]' src tests | wc -l, at tag v0.15.0",
+      "href": "https://github.com/SophanaSok/ai-usage-tui/tree/v0.15.0/tests"
+    },
+    {
+      "label": "lines of Rust",
+      "value": 27194,
+      "how": "git ls-files 'src/*.rs' | xargs cat | wc -l, at tag v0.15.0"
+    },
+    {
+      "label": "commits",
+      "value": 233,
+      "how": "git rev-list --count HEAD, at tag v0.15.0",
+      "href": "https://github.com/SophanaSok/ai-usage-tui/commits/main"
+    },
+    {
+      "label": "releases",
+      "value": 16,
+      "how": "gh api repos/SophanaSok/ai-usage-tui/releases --jq length",
+      "href": "https://github.com/SophanaSok/ai-usage-tui/releases"
+    }
+  ],
+  "channels": [
+    {
+      "name": "crates.io",
+      "kind": "registry",
+      "href": "https://crates.io/crates/ai-usage-tui"
+    },
+    {
+      "name": "Homebrew tap",
+      "kind": "tap",
+      "href": "https://github.com/sophanasok/homebrew-tap"
+    },
+    {
+      "name": "Scoop bucket",
+      "kind": "bucket",
+      "href": "https://github.com/SophanaSok/scoop-bucket"
+    },
+    {
+      "name": "PKGBUILD",
+      "kind": "release-asset",
+      "href": "https://github.com/SophanaSok/ai-usage-tui/releases"
+    },
+    {
+      "name": "Chocolatey package",
+      "kind": "release-asset",
+      "href": "https://github.com/SophanaSok/ai-usage-tui/releases"
+    }
+  ],
+  "lens": {
+    "swe": {
+      "rank": 1,
+      "angle": "27k lines of Rust with 532 tests, released through crates.io, a Homebrew tap and a Scoop bucket from one CI pipeline, across sixteen releases."
+    },
+    "data": {
+      "rank": 3,
+      "angle": "Six unlike usage logs, a SQLite database, tailed JSONL sessions and a telemetry file, normalised into one priced model where an unknown rate stays unknown instead of becoming $0.00."
+    },
+    "ml": {
+      "rank": 1,
+      "angle": "Measures cost per passing test per model, so routing and escalation decisions rest on delivered results rather than token counts."
+    }
+  },
+  "highlights": [
+    "One registry of sources drives both the live dashboard and the JSON/CSV exports, so a provider cannot be in one and missing from the other.",
+    "Collectors resume from high-water marks and tail session logs by byte offset; nothing re-reads history on every poll.",
+    "A privacy boundary with a test behind it: a fake credential planted in a transcript line fails the build if it reaches any record.",
+    "Every cost is labelled provider-reported, calculated, estimated, free, local or unavailable; a missing rate is never a paid zero.",
+    "Subscription rate-limit windows read from Claude Code's own cache and from Omarchy's agents panel, six fields each, never a token."
+  ],
+  "images": [
+    {
+      "file": "dashboard.png",
+      "alt": "The ai-usage-tui dashboard: cost tiles across the top, a token-flow pane on the left and a per-model table on the right, drawn from invented demo data",
+      "label": "ai-usage-tui — dashboard"
+    },
+    {
+      "file": "routing.png",
+      "alt": "The routing analytics view: escalations between models with the cost of each, and a per-agent table of cost per passing test",
+      "label": "ai-usage-tui — routing analytics"
+    }
+  ]
+}

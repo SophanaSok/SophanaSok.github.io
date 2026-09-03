@@ -1,0 +1,16 @@
+# Keep the build's two dependencies and the workflow's actions current. The
+# site ships no JavaScript bundle, so an update here only ever changes what
+# builds it, and `npm run verify` on the pull request says whether it still does.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      build:
+        patterns: ['*']
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly

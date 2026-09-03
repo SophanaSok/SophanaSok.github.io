@@ -1,0 +1,26 @@
+{
+  "name": "streakly",
+  "tagline": "A habit-vlogging app: Express, PostgreSQL, JWT, Docker Compose.",
+  "summary": "A TikTok-inspired habit tracker where each check-in is a short video. Node and Express on PostgreSQL with a hand-written schema and seed, access and refresh JWTs, bcrypt, multer uploads, a vanilla-JavaScript client, and a Docker Compose file that brings the whole stack up with one command. The one classic full-stack CRUD-and-auth project on this page.",
+  "tier": "secondary",
+  "language": "JavaScript",
+  "stack": ["Node", "Express", "PostgreSQL", "JWT", "bcrypt", "multer", "Docker Compose"],
+  "verifiedOn": "2026-09-03",
+  "repo": "https://github.com/SophanaSok/streakly",
+  "metrics": [
+    {
+      "label": "commits",
+      "value": 6,
+      "how": "git rev-list --count HEAD on main, 2026-09-03",
+      "href": "https://github.com/SophanaSok/streakly/commits/main"
+    }
+  ],
+  "lens": {
+    "swe": { "rank": 6, "angle": "Access and refresh tokens, bcrypt, uploads, and a Compose file that stands the stack up in one command." },
+    "data": { "rank": 4, "angle": "A hand-written PostgreSQL schema and seed, rather than an ORM's guess at one." }
+  },
+  "highlights": [
+    "Access plus refresh JWT flow with bcrypt-hashed credentials.",
+    "schema.sql and seed.sql checked in, so the database is reviewable in a diff."
+  ]
+}

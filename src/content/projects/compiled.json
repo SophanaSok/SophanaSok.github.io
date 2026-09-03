@@ -1,0 +1,61 @@
+{
+  "name": "Compiled",
+  "tagline": "Sixty tech sources, scraped concurrently, deduplicated three ways, served from SQLite.",
+  "summary": "A news aggregator that fetches sixty tech blogs and news sites behind a semaphore with exponential backoff, parses feeds and listing pages with BeautifulSoup, deduplicates by canonical URL, title fingerprint and token-set Jaccard similarity, scores thirteen categories from weighted keyword tables, and serves the result through a FastAPI REST API and a dependency-free web UI on SQLite with FTS5 search. Dockerised and running on Fly.io, refreshing itself every twenty minutes.",
+  "tier": "flagship",
+  "language": "Python",
+  "stack": ["Python 3.12", "FastAPI", "httpx (async)", "BeautifulSoup", "SQLite WAL + FTS5", "Docker", "Fly.io", "uv"],
+  "version": "0.2.0",
+  "verifiedOn": "2026-09-03",
+  "repo": "https://github.com/SophanaSok/compiled",
+  "live": "https://compiled.fly.dev/",
+  "license": "MIT",
+  "metrics": [
+    {
+      "label": "sources",
+      "value": 60,
+      "how": "grep -cE '^\\s*Source\\(' compiled/sources.py, at tag v0.2.0",
+      "href": "https://github.com/SophanaSok/compiled/blob/main/compiled/sources.py"
+    },
+    {
+      "label": "tests",
+      "value": 108,
+      "how": "grep -c 'def test_' tests/*.py, summed, at tag v0.2.0",
+      "href": "https://github.com/SophanaSok/compiled/tree/main/tests"
+    },
+    {
+      "label": "lines of Python",
+      "value": 2353,
+      "how": "git ls-files 'compiled/*.py' | xargs cat | wc -l, at tag v0.2.0"
+    },
+    {
+      "label": "lines of tests",
+      "value": 1357,
+      "how": "git ls-files 'tests/*.py' | xargs cat | wc -l, at tag v0.2.0"
+    }
+  ],
+  "channels": [
+    { "name": "Live on Fly.io", "kind": "live", "href": "https://compiled.fly.dev/" }
+  ],
+  "lens": {
+    "data": {
+      "rank": 2,
+      "angle": "Sixty sources fetched concurrently behind a semaphore with backoff, three-pass dedupe (canonical URL, title fingerprint, Jaccard above 0.85), idempotent WAL upserts, FTS5 search and keyset pagination."
+    },
+    "swe": {
+      "rank": 4,
+      "angle": "An async Python 3.12 service on FastAPI and httpx with 108 tests, a Dockerfile, a health check, and a Fly.io deployment that refreshes itself every twenty minutes."
+    },
+    "ml": {
+      "rank": 2,
+      "angle": "Near-duplicate detection by token-set Jaccard similarity inside a two-day window, and weighted keyword scoring across thirteen categories, with the thresholds written down and tested."
+    }
+  },
+  "highlights": [
+    "One AsyncClient fetches every source behind a semaphore; timeouts, 5xx and 429 retry with exponential backoff, 4xx is recorded and not retried, and a broken source never fails the run.",
+    "Bodies stream and cap at 25 MB, redirects at five hops, and the User-Agent names the crawler honestly.",
+    "The surviving duplicate prefers the original publisher and the earliest timestamp; the other sources are kept in also_seen_on and the highest vote count seen on any copy carries over.",
+    "UNIQUE constraints on canonical URL and title fingerprint make a repeated scrape idempotent; a stored article is never replaced.",
+    "Retention pruning and an in-process scheduler keep a 1 GB volume honest without a second service."
+  ]
+}

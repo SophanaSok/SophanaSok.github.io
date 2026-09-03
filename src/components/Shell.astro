@@ -1,0 +1,146 @@
+---
+/* The hero: a drawing of a terminal dashboard in HTML and CSS, built from the
+ * same project records the rest of the page is. Without JavaScript it is a
+ * still; the script on the home page adds the count-up and the clock. The
+ * footer keys are labels for the lens radios in the header, the way a TUI's
+ * key line drives its panes. */
+import type { CollectionEntry } from 'astro:content';
+import { LENSES, RANKED } from '../lib/site';
+import { compact, formatNumber } from '../lib/format';
+import profile from '../content/profile.json';
+import '../styles/shell.css';
+
+interface Props {
+  flagships: CollectionEntry<'projects'>[];
+}
+const { flagships } = Astro.props;
+
+const languages = new Set(flagships.map((p) => p.data.language));
+const top = (p: CollectionEntry<'projects'>) => RANKED.filter((l) => p.data.lens[l]?.rank === 1);
+const inLens = (p: CollectionEntry<'projects'>) => RANKED.filter((l) => p.data.lens[l]);
+let order = 0;
+const next = () => order++;
+const label = flagships
+  .map((p) => `${p.data.name}: ${formatNumber(p.data.metrics[0].value)} ${p.data.metrics[0].label}`)
+  .join('; ');
+---
+<figure class="shell-figure">
+  <p class="visually-hidden">A terminal dashboard listing four flagship projects with their headline numbers. {label}.</p>
+  <div class="term" id="term">
+    <header class="term-head" style={`--i:${next()}`}>
+      <span class="term-badge">PORTFOLIO</span>
+      <span class="term-status">{flagships.length} flagships</span>
+      <span class="term-status">{languages.size} languages</span>
+      <span class="term-status">verified {profile.verifiedOn}</span>
+      <span class="term-clock" data-clock>00:00:00</span>
+    </header>
+
+    <div class="term-tiles">
+      {flagships.map((p) => {
+        const m = p.data.metrics[0];
+        return (
+          <div class="tile" style={`--i:${next()}`}>
+            <span class="tile-title">{p.data.name}</span>
+            <b class="tile-value" data-count={m.value}>{formatNumber(m.value)}</b>
+            <span class="tile-sub">{m.label}</span>
+          </div>
+        );
+      })}
+    </div>
+
+    <div class="term-body">
+      <section class="pane pane-projects" style={`--i:${next()}`}>
+        <span class="pane-title">PROJECTS</span>
+        <div class="scroll" tabindex="0" role="region" aria-label="Flagship projects">
+          <table>
+            <thead>
+              <tr><th>name</th><th>lang</th><th>proof</th><th>lines</th></tr>
+            </thead>
+            <tbody>
+              {flagships.map((p, i) => {
+                const m = p.data.metrics[0];
+                const lines = p.data.metrics.find((x) => x.label.startsWith('lines'));
+                return (
+                  <tr style={`--i:${i}`} data-top={top(p).join(' ')} data-in={inLens(p).join(' ')} class={i === 0 ? 'first' : undefined}>
+                    <td>{p.data.name}</td>
+                    <td class="dim">{p.data.language}</td>
+                    <td class="c-accent">{formatNumber(m.value)} <span class="dim">{m.label}</span></td>
+                    <td>{lines ? compact(lines.value) : '—'}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+        <span class="caret" aria-hidden="true"></span>
+      </section>
+
+      <section class="pane pane-now" style={`--i:${next()}`}>
+        <span class="pane-title">NOW</span>
+        <dl class="now">
+          <div><dt>role</dt><dd>{profile.now}</dd></div>
+          <div>
+            <dt>open to</dt>
+            <dd>{LENSES.map((l) => <span data-for={l.id}>{l.role}</span>)}</dd>
+          </div>
+          <div><dt>lens</dt><dd>{LENSES.map((l) => <span data-for={l.id}>{l.id === 'all' ? 'all work' : `${l.label} view`}</span>)}</dd></div>
+        </dl>
+        <p class="pane-foot dim">every number above names the command that counted it</p>
+      </section>
+    </div>
+
+    <footer class="term-foot" style={`--i:${next()}`}>
+      {LENSES.map((l) => (
+        <label for={`lens-${l.id}`} data-key={l.key} data-lens={l.id}><b>{l.key}</b> {l.label.toLowerCase()}</label>
+      ))}
+      <span data-key="t"><b>t</b> theme</span>
+      <a href={profile.links.github}><b>g</b> github</a>
+    </footer>
+  </div>
+  <figcaption>Drawn in HTML from this page's own project records, not a screenshot. Keys switch the lens.</figcaption>
+</figure>
+
+<script>
+  (() => {
+    const term = document.getElementById('term');
+    if (!term) return;
+    const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // The tiles count up to the figure they show, then show exactly it again.
+    if (!still) {
+      for (const el of term.querySelectorAll<HTMLElement>('[data-count]')) {
+        const target = Number(el.dataset.count);
+        const final = el.textContent;
+        const t0 = performance.now();
+        const step = (now: number) => {
+          const p = Math.min(1, (now - t0 - 400) / 900);
+          if (p < 0) return requestAnimationFrame(step);
+          const eased = 1 - Math.pow(1 - p, 3);
+          el.textContent = Math.round(target * eased).toLocaleString('en-US');
+          if (p < 1) requestAnimationFrame(step);
+          else el.textContent = final;
+        };
+        requestAnimationFrame(step);
+      }
+    }
+
+    // The clock is the one live thing.
+    const clock = term.querySelector('[data-clock]');
+    if (clock) {
+      const tick = () => {
+        clock.textContent = new Date().toTimeString().slice(0, 8);
+      };
+      tick();
+      if (!still) setInterval(tick, 1000);
+    }
+
+    // `g` follows the footer's own link.
+    document.addEventListener('keydown', (e) => {
+      if (e.key !== 'g' || e.altKey || e.ctrlKey || e.metaKey) return;
+      const t = e.target;
+      if (t instanceof HTMLElement && /^(input|textarea|select)$/i.test(t.tagName) && (t as HTMLInputElement).type !== 'radio') return;
+      const a = term.querySelector<HTMLAnchorElement>('.term-foot a');
+      if (a) location.href = a.href;
+    });
+  })();
+</script>

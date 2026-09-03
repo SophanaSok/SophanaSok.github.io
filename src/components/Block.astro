@@ -1,0 +1,27 @@
+---
+/* A titled block, the way ratatui draws one: the title sits on the top
+ * border, painted over the rule in the page's own ground. Every section of
+ * the page is one of these, so the chrome reads as a terminal while the
+ * words inside read as a magazine. */
+interface Props {
+  title: string;
+  /** Running number, shown before the title in the eyebrow style. */
+  n?: string;
+  id?: string;
+  level?: 2 | 3;
+  class?: string;
+  /** Extra attributes, e.g. `data-lens` and the lens order style. */
+  attrs?: Record<string, string | undefined>;
+}
+const { title, n, id, level = 2, class: klass, attrs = {} } = Astro.props;
+const Heading = level === 3 ? 'h3' : 'h2';
+---
+<section class={['block', klass].filter(Boolean).join(' ')} id={id} {...attrs}>
+  <Heading class="block-title">
+    {n && <span class="block-n">{n}</span>}
+    <span class="block-name">{title}</span>
+  </Heading>
+  <div class="block-body">
+    <slot />
+  </div>
+</section>

@@ -1,0 +1,31 @@
+{
+  "name": "algebraic",
+  "tagline": "A roguelike deckbuilder where solving algebra is the combat.",
+  "summary": "A Lua and LÖVE game in which every card is a legitimate algebraic transformation and every play must preserve the equation's equivalence. Reach x = n before your actions run out, but the shortest solve never meets the score target: the game is about which longer line pays best inside the budget, with a streak multiplier that accelerates and a once-per-encounter chain. A run is a ladder of eight encounters, one deck, one life.",
+  "tier": "secondary",
+  "language": "Lua",
+  "stack": [
+    "Lua",
+    "LÖVE"
+  ],
+  "verifiedOn": "2026-09-03",
+  "repo": "https://github.com/SophanaSok/algebraic",
+  "metrics": [
+    {
+      "label": "commits",
+      "value": 11,
+      "how": "git rev-list --count HEAD on main, 2026-09-03",
+      "href": "https://github.com/SophanaSok/algebraic/commits/main"
+    }
+  ],
+  "lens": {
+    "swe": {
+      "rank": 9,
+      "angle": "Lua and LÖVE: a rules engine that checks algebraic equivalence on every card play, under a scoring system built to reward the longer solve."
+    }
+  },
+  "highlights": [
+    "Invalid mathematics is never rewarded: a card that breaks equivalence cannot be played, and a wasted move collapses the streak.",
+    "Score is chips times a multiplier that compounds along a streak, so the design question on every rung is the longer line, not the shortest solve."
+  ]
+}

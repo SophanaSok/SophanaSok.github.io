@@ -1,0 +1,59 @@
+{
+  "name": "postings-qa",
+  "tagline": "A job-postings pipeline with a data-QA core: every rejected row says why.",
+  "summary": "Pulls listings from public job APIs (Remotive, Greenhouse, Lever, USAJOBS, Adzuna), normalises salaries, dates and HTML before validating, runs nine rule-based quality checks that reject bad rows with a stated reason, keeps a deduplicated SQLite history with first-seen and last-seen timestamps, and turns the result into an Excel workbook with native charts and a Streamlit dashboard. A QA preview re-runs the checks over stored history with the filters you are about to save and shows exactly which listings would flip. Scrapers exist but ship off; the defaults are APIs with attribution.",
+  "tier": "secondary",
+  "language": "Python",
+  "stack": ["Python 3.12", "SQLite", "openpyxl", "Streamlit", "pandas", "ruamel.yaml", "pytest", "uv"],
+  "version": "0.1.0",
+  "verifiedOn": "2026-09-03",
+  "repo": "https://github.com/SophanaSok/postings-qa",
+  "license": "MIT",
+  "metrics": [
+    {
+      "label": "tests",
+      "value": 44,
+      "how": "grep -c 'def test_' tests/*.py | awk -F: '{s+=$2} END {print s}', at tag v0.1.0; all run offline against saved API responses",
+      "href": "https://github.com/SophanaSok/postings-qa/tree/v0.1.0/tests"
+    },
+    {
+      "label": "lines of Python",
+      "value": 4341,
+      "how": "git ls-files 'postingsqa/*.py' | xargs cat | wc -l, at tag v0.1.0"
+    },
+    {
+      "label": "commits",
+      "value": 6,
+      "how": "git rev-list --count HEAD, at tag v0.1.0",
+      "href": "https://github.com/SophanaSok/postings-qa/commits/main"
+    },
+    {
+      "label": "QA checks",
+      "value": 9,
+      "how": "the QA checks table in README.md, one row per check, at tag v0.1.0",
+      "href": "https://github.com/SophanaSok/postings-qa#qa-checks"
+    }
+  ],
+  "lens": {
+    "data": {
+      "rank": 2,
+      "angle": "Nine auditable checks reject a listing with the check name and reason attached; stable ids per source and first-seen / last-seen timestamps make dedup across runs a fact, not a guess."
+    },
+    "swe": {
+      "rank": 6,
+      "angle": "Adapters split fetch from pure parse so 44 tests run offline on saved responses; the UI starts runs as subprocesses, so a failing adapter cannot take the dashboard down."
+    }
+  },
+  "highlights": [
+    "Every rejected listing carries the names of the checks it failed and the reason text, so a filter decision can be inspected rather than trusted.",
+    "Normalisation happens before validation: free-text salaries become min, max, currency and period and are annualised; relative dates and epoch milliseconds become dates.",
+    "The QA preview re-runs the checks over stored history with the filters you are about to save and shows which listings would flip, before anything is written.",
+    "Parsers take decoded payloads, not URLs, so every adapter is tested against a saved API response and no test touches the network.",
+    "Runs started from the UI are child processes whose logs are tailed; Stop kills the whole process group, and the settings forms write config.yaml through a round-trip loader that keeps its comments."
+  ],
+  "images": [
+    { "file": "dashboard.png", "alt": "The postings-qa Streamlit dashboard: KPI tiles from the last run above charts of jobs by source and rejections by check, drawn from synthetic demo data", "label": "postings-qa — dashboard" },
+    { "file": "settings-qa-preview.png", "alt": "The QA preview in the settings page: the checks re-run over stored history with edited filters, listing which postings would flip from pass to reject", "label": "postings-qa — QA preview" },
+    { "file": "excel-dashboard.png", "alt": "The generated Excel workbook's Dashboard sheet with a KPI row and native charts for source, company, salary and QA rejections", "label": "postings-qa — Excel workbook" }
+  ]
+}

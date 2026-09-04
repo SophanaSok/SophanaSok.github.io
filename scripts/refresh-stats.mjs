@@ -20,6 +20,7 @@ const DIRS = {
   'json-data-drift-analyzer': 'json-data-drift-analyzer',
   compiled: 'tech-news',
   otacli: 'otacli',
+  'postings-qa': 'job-posting-bot',
   oneplusone: 'games/oneplusone',
   'brick-breaker': 'games/brick-breaker',
   algebraic: 'games/algebraic',
@@ -28,9 +29,13 @@ const DIRS = {
 const sh = (cmd, cwd) => execSync(cmd, { cwd, encoding: 'utf8', shell: '/bin/bash', stdio: ['ignore', 'pipe', 'ignore'] }).trim();
 
 /** The command for a label, in the same words the site shows. */
-function count(label, dir, ref) {
+function count(label, dir, ref, how) {
   const at = ref ? `git -c advice.detachedHead=false stash -q 2>/dev/null; ` : '';
   void at;
+  // A "lines of" metric whose `how` opens with the git command it cites is
+  // recounted by that exact command, so the site and the script cannot drift.
+  const cited = label.startsWith('lines') && how?.match(/^(git ls-files .*?\| wc -l)/);
+  if (cited) return Number(sh(cited[1], dir));
   switch (true) {
     case label === 'tests' && existsSync(`${dir}/Cargo.toml`):
       return Number(sh("grep -rhoE '#\\[(tokio::)?test\\]' src tests | wc -l", dir));
@@ -45,7 +50,7 @@ function count(label, dir, ref) {
     case label === 'lines of TypeScript':
       return Number(sh("git ls-files 'src/*.ts' 'src/*.tsx' | xargs cat | wc -l", dir));
     case label === 'lines of Python':
-      return Number(sh("git ls-files 'compiled/*.py' | xargs cat | wc -l", dir));
+      return Number(sh("git ls-files '*.py' ':!tests/*' | xargs cat | wc -l", dir));
     case label === 'lines of tests':
       return Number(sh("git ls-files 'tests/*.py' | xargs cat | wc -l", dir));
     case label === 'commits':
@@ -79,7 +84,7 @@ for (const [id, rel] of Object.entries(DIRS)) {
   const record = JSON.parse(readFileSync(file, 'utf8'));
   const tag = record.version ? `v${record.version}` : null;
   for (const m of record.metrics) {
-    const value = count(m.label, dir, tag);
+    const value = count(m.label, dir, tag, m.how);
     if (value === null) {
       console.log(`${id}: ${m.label}: no counter for this label, left at ${m.value}`);
       continue;

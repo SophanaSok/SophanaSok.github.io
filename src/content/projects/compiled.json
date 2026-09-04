@@ -51,7 +51,7 @@
   ],
   "lens": {
     "data": {
-      "rank": 2,
+      "rank": 3,
       "angle": "Sixty sources fetched concurrently behind a semaphore with backoff, three-pass dedupe (canonical URL, title fingerprint, Jaccard above 0.85), idempotent WAL upserts, FTS5 search and keyset pagination."
     },
     "swe": {
